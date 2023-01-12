@@ -17,7 +17,11 @@ We consider an event-triggered scheme where an event occurs once the central que
 The fixed point of our AIMD algorithm contrained by saturators can be computed in `search_fixed_point.m` for arbitrary AIMD configurations. Simulations under constraints can be carried out in `AIMD_scheduler_and_resource_allocator.m` for constant or time-varying workload profiles.
 
 
-## Main references
+## References
 Description and preliminary results of the algorithm can be found here https://doi.org/10.1109/CDC45484.2021.9683379 
 
 A journal version is under review, and will be released once accepted for publication.
+
+## Acknowledgments 
+
+This work has been supported by the CHIST-ERA grant CHIST-ERA-18-SDCDN-003 (DRUID-NET) https://druidnet.netmode.ntua.gr/
