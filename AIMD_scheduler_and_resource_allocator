@@ -1,0 +1,132 @@
+clear all
+close all
+clc
+%% -----------INPUTS------------------------------------
+iter = 10000;               % Specify number of iterations (Events)
+alfa = 1*[1 2]';          % AIMD increase factor a_i (make sure vectors dimensions are consistent)
+beta = [.5 .85]';         % AIMD decrease factor b_i
+n = length(alfa);         % number of nodes - this is not input ;)
+umax_sat = 1*[2 .2]';     % Set upper saturators
+uk0 = 1*[.5 2]';          % initial states (should be < umax_sat)
+wk0 = 4*[1 2]';           % initial backlog
+lambda_min = 1;           % min workload (set min = max for constant workload)
+lambda_max = 2;           % max workload
+ee = 1e-3;                % accuracy for finding Tk
+%% ----------END of INPUTS-------------------------------
+%% Check
+if sum(umax_sat) < lambda_max
+    fprintf('Invalid settings!!!!\n')
+    fprintf('Increase sum of saturators or decrease lambda_max\n')
+    return
+end
+%%
+%%
+Tk = zeros(1,iter);     % inter-event period
+uk = zeros(n,iter + 1); % AIMD states
+uk(:,1) = uk0;
+wk = zeros(n,iter +1);  % backlogs
+wk(:,1) = wk0;
+gk = zeros(n,iter);     % service rates
+%%
+% compute Tk and AIMD states
+for i = 1:iter
+    lambda = lambda_fun(lambda_min, lambda_max);
+    Tk(i) = find_Tk(alfa, beta, umax_sat, lambda, uk(:,i), ee);
+    uk(:,i+1) =min( diag(beta)*uk(:,i) + alfa*Tk(i), umax_sat); % update of AIMD states
+end
+%%
+% compute service rates, \gamma_i(k), and queues, w_i(k)
+for i = 1:iter
+    gk(:,i) = min(diag(beta)*uk(:,i) + sqrt(2*alfa.*wk(:,i)), umax_sat);
+    for j = 1:n
+        if uk(j,i+1) < umax_sat(j)
+            wk(j,i+1) = wk(j,i) + (beta(j)*uk(j,i)+.5*alfa(j)*Tk(i) - gk(j,i))*Tk(i);
+        else
+            wk(j,i+1) = wk(j,i) + umax_sat(j)*Tk(i) - (umax_sat(j) - beta(j)*uk(j,i))*((umax_sat(j)-beta(j)*uk(j,i))/alfa(j))/2 - gk(j,i)*Tk(i);
+        end
+    end
+end
+
+%%
+% PLOTS (eventwise)
+if n == 2 
+    figure(11) % state diagram
+    hold on
+    plot(uk(1,:), uk(2,:),'*-','LineWidth', 1.5)
+    xlabel('u_1')
+    ylabel('u_2')
+    title('State transition')
+    grid on
+end
+hold off
+%
+figure(2) % AIMD states
+plot(uk','LineWidth',2)
+xlabel('Events')
+ylabel('u_i(k)')
+title('AIMD states at events')
+grid on
+hold off
+%
+figure(3) % Inter-event period
+plot(1:iter, Tk,'LineWidth', 2)
+xlabel('Events')
+ylabel('T_k')
+title('Inter-event period')
+grid on
+%
+figure(4) % service rate (gamma)
+plot(gk','LineWidth',2)
+xlabel('Events')
+ylabel(' \gamma_i(k)')
+title('Service rates')
+grid on
+% 
+figure(5) % backlogs (queue length)
+plot(wk','LineWidth',2)
+xlabel('Events')
+ylabel('w_i(k)')
+title('Backlog')
+grid on
+
+
+%%
+function workload = lambda_fun(Lmin, Lmax)
+c = rand;
+workload = c*Lmin + (1-c)*Lmax;
+end
+
+function Tk = find_Tk(alfa, beta, umax, lambda, uk, ee)
+Tk_unsat = max(0, 2*(lambda - beta'*uk)/sum(alfa));
+uk_plus = diag(beta)*uk + alfa*Tk_unsat;
+if any(uk_plus < umax)
+    Tk = Tk_unsat;
+else
+    increm = ee;
+    t = 0;
+    n = length(alfa);
+    delta_out_i = zeros(n,1);
+    flag = 1;
+    while flag
+        t = t + increm;
+        for i = 1:n
+            delta_out_i(i) = integral(@(s) min(beta(i)*uk(i) + alfa(i)*s, umax(i)), 0, t);
+        end
+        delta_out_tot = sum(delta_out_i);
+        if delta_out_tot > lambda*t
+            flag = 0;
+        end
+    end
+    Tk = t;
+end
+end
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
