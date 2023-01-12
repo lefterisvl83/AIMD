@@ -20,4 +20,4 @@ The fixed point of our AIMD algorithm contrained by saturators can be computed i
 ## Main references
 Description and preliminary results of the algorithm can be found here https://doi.org/10.1109/CDC45484.2021.9683379 
 
-A journal version is under review. It will be released once accepted for publication.
+A journal version is under review, and will be released once accepted for publication.
