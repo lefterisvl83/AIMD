@@ -8,7 +8,7 @@ We consider an event-triggered scheme where an event occurs once the central que
 
 
 ## Requirements
-compute_limit_set.m requires the MPT3 toolbox for generating Polyhedra objects
+`compute_limit_set.m` requires the MPT3 toolbox for generating Polyhedra objects
 
 ## Saturated AIMD
-The fixed point of our AIMD algorithm contrained by saturators can be computed in search_fixed_point.m for arbitrary AIMD configurations. Simulations under constraints can be carried out in  
+The fixed point of our AIMD algorithm contrained by saturators can be computed in search_fixed_point.m for arbitrary AIMD configurations. Simulations under constraints can be carried out in `AIMD_scheduler_and_resource_allocator.m`
