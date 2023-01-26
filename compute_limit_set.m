@@ -3,10 +3,11 @@ close all
 clc
 %
 %% --------- Inputs ----------
-a = [1 2]';
-b = [.5 .85]';
-lmin = 1;
-lmax = 2.5;
+a = [1 2]';        % growth factor   (\alpha parameter)
+b = [.5 .85]';     % decrease factor (\beta parameter)
+lmin = 1;          % minimum arrival rate (\lambda_min) 
+lmax = 2.5;        % maximum arrival rate (\lambda_max)
+iter = 15;         % maximum iterations for approximating the limit set
 %% ------ End of Inputs -------
 %
 %% Matrices
@@ -67,7 +68,6 @@ P10.minHRep;
 P20 = Polyhedron(vertices2);
 P20.minHRep;
 %
-iter = 15; % maximum iterations for approximating the limit set
 P1(1) = P10;
 P2(1) = P20;
 for j = 1:iter
